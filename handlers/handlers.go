@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	"bitbucket.org/rking788/hotseats-api/model"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/rking788/hotseats-api/model"
 	"net/http"
 )
 
@@ -19,8 +19,8 @@ func ListEvents(c *gin.Context) {
 
 	fmt.Printf("Getting events for stadium: %s\n", stadium)
 
-	evt := model.Event{EventType: "Foulball", Date: "2016-01-31"}
-	evt2 := model.Event{EventType: "Homerun", Date: "2016-01-30"}
+	evt := model.Event{EventType: "Foulball", Date: "2016-01-28T21:30:16GMT-0700"}
+	evt2 := model.Event{EventType: "Homerun", Date: "2016-01-30T11:16:00GMT-0700"}
 
 	eventList := make([]model.Event, 0, 10)
 	eventList = append(eventList, evt)
@@ -44,7 +44,7 @@ func CreateEvent(c *gin.Context) {
 
 		// TODO: Start actually persisting the event (evt) here...
 
-		c.JSON(http.StatusOK, map[string]string{"status": "Success"})
+		c.JSON(http.StatusCreated, map[string]string{"status": "Success"})
 	} else {
 		errMsg := fmt.Sprintf("Error: %s", err.Error())
 		fmt.Println(errMsg)

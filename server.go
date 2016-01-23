@@ -1,9 +1,9 @@
 package main
 
 import (
-	"bitbucket.org/rking788/hotseats-api/handlers"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/rking788/hotseats-api/handlers"
 	"net/http"
 )
 
