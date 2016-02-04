@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"github.com/rking788/hotseats-api/Godeps/_workspace/src/github.com/gin-gonic/gin"
 	"github.com/rking788/hotseats-api/handlers"
 	"net/http"
@@ -28,8 +29,9 @@ func main() {
 	router.GET("/events/:stadium", handlers.ListEvents)
 
 	router.POST("/events", handlers.CreateEvent)
+	
+	port := os.Getenv("PORT")
 
-	port := ":8080"
 	fmt.Println("Listening on port ", port)
-	router.Run(port)
+	router.Run(":" + port)
 }
