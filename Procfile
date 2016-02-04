@@ -1,0 +1,1 @@
+web: hotseats-api

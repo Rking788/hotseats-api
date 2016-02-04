@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
+	"github.com/rking788/hotseats-api/Godeps/_workspace/src/github.com/gin-gonic/gin"
 	"github.com/rking788/hotseats-api/model"
 	"net/http"
 )
