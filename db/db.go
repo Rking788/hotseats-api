@@ -3,8 +3,8 @@ package db
 import (
 	"errors"
 	"fmt"
-	"github.com/jinzhu/gorm"
-	_ "github.com/lib/pq"
+	"github.com/rking788/hotseats-api/Godeps/_workspace/src/github.com/jinzhu/gorm"
+	_ "github.com/rking788/hotseats-api/Godeps/_workspace/src/github.com/lib/pq"
 	"os"
 )
 
