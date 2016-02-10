@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"github.com/rking788/hotseats-api/Godeps/_workspace/src/github.com/gin-gonic/gin"
+	"github.com/rking788/hotseats-api/db"
 	"github.com/rking788/hotseats-api/model"
 	"net/http"
 )
@@ -17,14 +18,25 @@ func ListEvents(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, map[string]string{"status": errMsg})
 	}
 
+	// Store the new event in the DB
+	dbConn, dbErr := db.GetDBConnection()
+	if dbErr != nil {
+		fmt.Printf("Found err: %s\n", dbErr.Error())
+		c.JSON(http.StatusInternalServerError,
+			map[string]string{"status": "Error cannot connect to DB!"})
+		return
+	}
+
+	// Find the `sid` by which the events will be selected
+	var outStadium model.Stadium
+	dbConn.Table("stadiums").Where("name = ?", stadium).First(&outStadium)
+
+	fmt.Printf("Found sid=%d\n", outStadium.Sid)
 	fmt.Printf("Getting events for stadium: %s\n", stadium)
 
-	evt := model.Event{EventType: "Foulball", Date: "2016-01-28T21:30:16GMT-0700"}
-	evt2 := model.Event{EventType: "Homerun", Date: "2016-01-30T11:16:00GMT-0700"}
-
-	eventList := make([]model.Event, 0, 10)
-	eventList = append(eventList, evt)
-	eventList = append(eventList, evt2)
+	// Select all events in the events table by the `sid`
+	eventList := make([]model.Event, 0, 3)
+	dbConn.Where(&model.Event{Sid: outStadium.Sid}).Find(&eventList)
 
 	response := make(map[string][]model.Event)
 	response["events"] = eventList
@@ -42,7 +54,29 @@ func CreateEvent(c *gin.Context) {
 	if err == nil {
 		fmt.Printf("Creating event: %v...\n", evt)
 
-		// TODO: Start actually persisting the event (evt) here...
+		// Store the new event in the DB
+		dbConn, dbErr := db.GetDBConnection()
+		if dbErr != nil {
+			fmt.Printf("Found err: %s\n", dbErr.Error())
+			c.JSON(http.StatusInternalServerError,
+				map[string]string{"status": "Error cannot connect to DB!"})
+			return
+		}
+
+		// Find the `sid` value that should be used when inserting the new event
+		var outStadium model.Stadium
+		dbConn.Table("stadiums").Where("name = ?", evt.Stadium.Name).First(&outStadium)
+
+		fmt.Printf("Found sid=%d\n", outStadium.Sid)
+
+		if outStadium.Sid == 0 {
+			fmt.Println("Didn't find a stadium with that name!!")
+			c.JSON(http.StatusBadRequest, map[string]string{"status": "Error no stadium with that name"})
+			return
+		}
+
+		evt.Sid = outStadium.Sid
+		dbConn.Create(&evt)
 
 		c.JSON(http.StatusCreated, map[string]string{"status": "Success"})
 	} else {
